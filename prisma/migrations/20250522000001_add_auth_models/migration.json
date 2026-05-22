@@ -1,0 +1,20 @@
+{
+  "version": "5.2",
+  "steps": [
+    {
+      "tag": "AlterTableAddColumn",
+      "table": "User",
+      "column": "image",
+      "type": "TEXT",
+      "optional": true
+    },
+    {
+      "tag": "CreateTable",
+      "table": "Account"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "Session"
+    }
+  ]
+}

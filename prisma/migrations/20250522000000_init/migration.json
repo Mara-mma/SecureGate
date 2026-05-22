@@ -1,0 +1,35 @@
+{
+  "version": "5.2",
+  "steps": [
+    {
+      "tag": "CreateTable",
+      "table": "User"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "VerificationToken"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "PasswordResetToken"
+    },
+    {
+      "tag": "CreateIndex",
+      "table": "User",
+      "fields": ["email"],
+      "unique": true
+    },
+    {
+      "tag": "CreateIndex",
+      "table": "VerificationToken",
+      "fields": ["token"],
+      "unique": true
+    },
+    {
+      "tag": "CreateIndex",
+      "table": "PasswordResetToken",
+      "fields": ["token"],
+      "unique": true
+    }
+  ]
+}
