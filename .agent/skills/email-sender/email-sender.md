@@ -1,33 +1,45 @@
 # Skill: Email Sender
 
 ## Purpose
-Send transactional emails using Resend and React Email templates.
+Send transactional emails using Nodemailer and React Email templates.
 
-## Setup (lib/email.ts)
+## Setup (lib/email.tsx)
 ```typescript
-import { Resend } from 'resend'
+import nodemailer from "nodemailer"
+import VerificationEmail from "../../emails/VerificationEmail"
+import PasswordResetEmail from "../../emails/PasswordResetEmail"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT),
+  secure: Number(process.env.SMTP_PORT) === 465,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+})
 
-export async function sendVerificationEmail(email: string, token: string) {
-  const verifyUrl = `${process.env.NEXTAUTH_URL}/verify-email/${token}`
-  
-  await resend.emails.send({
-    from: 'SecureGate <noreply@yourdomain.com>',
+const baseUrl = process.env.NEXTAUTH_URL!
+
+export async function sendVerificationEmail(name: string, email: string, token: string) {
+  const verifyUrl = `${baseUrl}/verify-email/${token}`
+
+  await transporter.sendMail({
+    from: process.env.SMTP_FROM,
     to: email,
-    subject: 'Verify your SecureGate account',
-    react: VerificationEmail({ verifyUrl }),
+    subject: "Verify your SecureGate account",
+    html: VerificationEmail({ name, verifyUrl }),
   })
 }
 
-export async function sendPasswordResetEmail(email: string, token: string) {
-  const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password/${token}`
-  
-  await resend.emails.send({
-    from: 'SecureGate <noreply@yourdomain.com>',
+export async function sendPasswordResetEmail(name: string, email: string, token: string) {
+  const resetUrl = `${baseUrl}/reset-password/${token}`
+
+  await transporter.sendMail({
+    from: process.env.SMTP_FROM,
     to: email,
-    subject: 'Reset your SecureGate password',
-    react: PasswordResetEmail({ resetUrl }),
+    subject: "Reset your SecureGate password",
+    html: PasswordResetEmail({ name, resetUrl }),
   })
 }
 ```
@@ -44,3 +56,4 @@ Each template receives a URL and displays:
 - Never send an email that confirms whether an account exists
 - Always wrap email sending in try/catch — a failed email should not crash the signup
 - Test with a real email address during development
+- Use Nodemailer with SMTP — do not use Resend

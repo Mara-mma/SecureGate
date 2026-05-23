@@ -3,6 +3,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
+import { checkRateLimit } from "@/lib/ratelimit"
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -16,9 +17,15 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) {
           return null
+        }
+
+        const ip = req?.headers?.["x-forwarded-for"]?.split(",")[0]?.trim() ?? req?.headers?.["x-real-ip"] ?? "unknown"
+
+        if (!checkRateLimit(ip, 5, 10 * 60 * 1000)) {
+          throw new Error("Too many attempts. Please try again later.")
         }
 
         const user = await prisma.user.findUnique({
@@ -35,11 +42,16 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
+        if (!user.emailVerified) {
+          throw new Error("Please verify your email before logging in")
+        }
+
         return {
           id: user.id,
           name: user.name,
           email: user.email,
           image: user.image,
+          emailVerified: true,
         }
       },
     }),
@@ -48,17 +60,19 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
+        token.emailVerified = (user as unknown as { emailVerified: boolean }).emailVerified ?? false
       }
       return token
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id
+        session.user.emailVerified = token.emailVerified
       }
       return session
     },
   },
   pages: {
-    signIn: "/login",
+    signIn: "/auth?mode=login",
   },
 }

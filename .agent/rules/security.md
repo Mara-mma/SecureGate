@@ -22,9 +22,11 @@
   - DATABASE_URL
   - NEXTAUTH_SECRET
   - NEXTAUTH_URL
-  - RESEND_API_KEY
-  - UPSTASH_REDIS_REST_URL
-  - UPSTASH_REDIS_REST_TOKEN
+  - SMTP_HOST
+  - SMTP_PORT
+  - SMTP_USER
+  - SMTP_PASS
+  - SMTP_FROM
 - .env.local must be in .gitignore before the first git push
 - Never console.log() any environment variable
 
@@ -40,9 +42,10 @@
 
 ### 5. Rate Limiting
 - Login endpoint: max 5 attempts per IP per 10 minutes
-- Forgot password endpoint: max 3 attempts per IP per 15 minutes
+- Forgot password endpoint: max 3 attempts per IP per 10 minutes
 - If limit exceeded: return 429 status with message "Too many attempts. Please try again later."
 - Rate limiting must happen BEFORE password checking
+- Rate limiter is in-memory (Map-based) — resets on server restart
 
 ### 6. Input Validation
 - ALWAYS validate with Zod on the server side

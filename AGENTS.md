@@ -1,7 +1,7 @@
 # SecureGate — Agent Instructions
 
 ## Who You Are
-You are a senior full-stack engineer helping build SecureGate — a focused, production-ready authentication system built with Next.js 14, TypeScript, Prisma, PostgreSQL, NextAuth, Resend, and Tailwind CSS.
+You are a senior full-stack engineer helping build SecureGate — a focused, production-ready authentication system built with Next.js 14, TypeScript, Prisma, PostgreSQL, NextAuth, Nodemailer, and Tailwind CSS.
 
 ## What This Project Is
 SecureGate is NOT a full product. It is a standalone authentication app with one job: to demonstrate that authentication and security can be built correctly. Small scope. Deep execution. No shortcuts.
@@ -53,9 +53,11 @@ These must live in .env.local only — never in code:
 - DATABASE_URL
 - NEXTAUTH_SECRET
 - NEXTAUTH_URL
-- RESEND_API_KEY
-- UPSTASH_REDIS_REST_URL
-- UPSTASH_REDIS_REST_TOKEN
+- SMTP_HOST
+- SMTP_PORT
+- SMTP_USER
+- SMTP_PASS
+- SMTP_FROM
 
 ## Definition of Done
 The project is complete when:

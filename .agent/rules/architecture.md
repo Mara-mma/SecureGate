@@ -10,9 +10,9 @@ Do not add features that are not listed in this file.
 - Database: PostgreSQL via Prisma ORM
 - Auth: NextAuth.js (Credentials provider only)
 - Password Hashing: bcryptjs (salt rounds: 12)
-- Email: Resend + React Email
+- Email: Nodemailer + React Email
 - Validation: Zod (server-side only)
-- Rate Limiting: Upstash Redis
+- Rate Limiting: In-memory Map
 - Styling: Tailwind CSS
 - Deployment: Vercel
 
@@ -27,12 +27,8 @@ securegate/
 ├── src/
 │   ├── app/                       ← All pages and API routes
 │   │   ├── (auth)/                ← Route group for auth pages
-│   │   │   ├── login/
-│   │   │   │   └── page.tsx
-│   │   │   ├── signup/
-│   │   │   │   └── page.tsx
-│   │   │   ├── forgot-password/
-│   │   │   │   └── page.tsx
+│   │   │   ├── auth/
+│   │   │   │   └── page.tsx       ← Single auth page (login/signup/forgot-password via ?mode=)
 │   │   │   ├── reset-password/
 │   │   │   │   └── [token]/
 │   │   │   │       └── page.tsx
@@ -54,14 +50,13 @@ securegate/
 │   │       └── reset-password/
 │   │           └── route.ts
 │   ├── components/
-│   │   ├── AuthForm.tsx
-│   │   ├── PasswordStrength.tsx
-│   │   └── LoadingButton.tsx
+│   │   ├── LoginForm.tsx
+│   │   ├── SignupForm.tsx
+│   │   └── ForgotPasswordForm.tsx
 │   ├── lib/
 │   │   ├── prisma.ts
 │   │   ├── auth.ts
-│   │   ├── email.ts
-│   │   ├── tokens.ts
+│   │   ├── email.tsx
 │   │   └── ratelimit.ts
 │   ├── schemas/
 │   │   └── auth.ts
@@ -70,17 +65,18 @@ securegate/
 │   ├── VerificationEmail.tsx
 │   └── PasswordResetEmail.tsx
 ├── .env.local                     ← NEVER commit this file
+├── .env.example                   ← Template for required env vars
 ├── .gitignore
-├── next.config.js
+├── next.config.mjs
 └── REFLECTION.md
 ```
 
 ## Pages & Access Control
 | Route | Who Can Access |
 |---|---|
-| /signup | Anyone (not logged in) |
-| /login | Anyone (not logged in) |
-| /forgot-password | Anyone |
+| /auth?mode=signup | Anyone |
+| /auth?mode=login | Anyone |
+| /auth?mode=forgot-password | Anyone |
 | /reset-password/[token] | Anyone with a valid token |
 | /verify-email/[token] | Anyone with a valid token |
 | /dashboard | Verified + authenticated users ONLY |
