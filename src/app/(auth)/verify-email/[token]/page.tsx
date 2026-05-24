@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
+import ResendForm from "./ResendForm"
 
 interface Props {
   params: { token: string }
@@ -23,6 +24,7 @@ export default async function VerifyEmailPage({ params }: Props) {
           <Link href="/auth?mode=login" className="text-sm text-blue-600 hover:underline font-medium">
             Go to login
           </Link>
+          <ResendForm />
         </div>
       </div>
     )
@@ -43,6 +45,7 @@ export default async function VerifyEmailPage({ params }: Props) {
           <Link href="/auth?mode=login" className="text-sm text-blue-600 hover:underline font-medium">
             Go to login
           </Link>
+          <ResendForm />
         </div>
       </div>
     )
